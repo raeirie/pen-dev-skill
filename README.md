@@ -1,17 +1,19 @@
 # pen-dev skill
 
-Operate [pen.dev](https://pen.dev) from an AI agent.
+Design in [pen.dev](https://pen.dev) by talking to your agent.
 
-The pen.dev CLI (`@pen.dev/cli`) exposes the same tool surface the desktop app's
-agent uses, via `pen interactive`. An agent can drive that surface directly: the
-design engine does the rendering, the agent makes the design decisions.
+You describe what you want. Your agent designs it — real frames, real layout, real
+components — directly on the pen.dev canvas or into a `.pen` file. You review the
+result as an image, say what to change, and it iterates.
 
-This repo packages that workflow as a **DeepSeek Harness skill**, plus a driver
-script that handles the parts agents trip over (authentication, socket paths,
-sandbox escapes, screenshot extraction).
+No prompt engineering, no CLI flags, no design tool to learn.
 
 ```
-pen interactive -a desktop   # ← this skill: the agent drives pen's tools
+You:    Use pen-dev to design a pricing page for a B2B analytics tool.
+Agent:  [audits your file for an existing design system]
+        [builds three pricing tiers]
+        [screenshots it, notices the CTAs don't line up, fixes them]
+        Done — here's the screenshot. Want the middle tier emphasized?
 ```
 
 Latest release: **[v0.1.1](CHANGELOG.md#011--2026-10-22)** ·
@@ -19,48 +21,139 @@ Latest release: **[v0.1.1](CHANGELOG.md#011--2026-10-22)** ·
 
 ---
 
-## Why this exists
+## Contents
 
-pen.dev's CLI has two ways to use it:
-
-| Mode | Command | Who drives it |
-| --- | --- | --- |
-| Agent mode | `pen --prompt "..."` | pen's own bundled model |
-| Interactive mode | `pen interactive` | *your* agent, using pen's tools |
-
-The CLI's own help says it plainly:
-
-> `pen interactive` — Start interactive shell. **Agents should use this mode to design with pen.dev.**
-
-Everything below is built on that second mode.
+- [Who this is for](#who-this-is-for)
+- [What it does](#what-it-does)
+- [Before you start](#before-you-start) · [Open Pen.app once](#open-penapp-once-and-leave-it-open-while-you-design)
+- [Install](#install) — [agent-first](#agent-first-install-recommended) · [one-line](#one-line-install) · [manual](#manual-install)
+- [Use it](#use-it) — [say what you want](#say-what-you-want-in-design-terms) · [point at a node](#point-at-a-node) · [review](#reviewing-the-result)
+- [Troubleshooting](#troubleshooting)
+- [For agents](#for-agents)
+- [For developers](#for-developers)
+- [Documentation](#documentation) · [License](#license)
 
 ---
 
-## What's in the box
+## Who this is for
 
+This README is ordered by who you probably are:
+
+| If you want to… | Read |
+| --- | --- |
+| **Use it** — get a design made | [Install](#install) → [Use it](#use-it) |
+| **Fix it** — something went wrong | [Troubleshooting](#troubleshooting) |
+| **Change it** — edit the skill or port it | [For developers](#for-developers) |
+| **Be the agent** — you're a model reading this | [For agents](#for-agents) |
+
+---
+
+## What it does
+
+The pen.dev CLI has two ways to work:
+
+| Mode | Who designs |
+| --- | --- |
+| `pen --prompt "..."` | pen's own bundled model |
+| `pen interactive` | **your** agent, using pen's tools |
+
+This skill is the second one. Your agent gets pen's full design tool surface —
+insert, update, layout, components, tokens, screenshots, export — and makes every
+design decision itself. pen's engine does the rendering.
+
+That matters because your agent already knows your codebase, your brand, and what
+you asked for. It doesn't need a second model in the middle.
+
+**What you can ask for**
+
+- New screens — landing pages, pricing, dashboards, onboarding, settings
+- Edits to an existing `.pen` file, or to the canvas open in Pen.app
+- Variants — *"give me three takes on this hero"*
+- Component and design-system work — buttons, cards, nav, tokens
+- Exports — PNG, or HTML with Tailwind or plain CSS
+
+---
+
+## Before you start
+
+Four things, once.
+
+| Requirement | Why |
+| --- | --- |
+| **Node.js ≥ 22.19** | pen's own requirement |
+| **`@pen.dev/cli`** | the engine the skill drives |
+| **A pen.dev account** | the free tier is enough |
+| **Python 3** | only for the two helper scripts |
+
+```bash
+npm install -g @pen.dev/cli
+pen version          # should print a version
 ```
-SKILL.md          the skill itself — instructions, schema rules, gotchas
-pen.sh            driver: multi | app | sel | seltree
-pen-sel.py        resolves the user's Pen.app selection into node ids
-pen-shots.py      extracts base64 screenshots from CLI output into PNG files
-examples/         runnable example scripts
-docs/             deeper reference material
+
+### Open Pen.app once (and leave it open while you design)
+
+This is the step people skip, so it gets its own heading.
+
+**With Pen.app running**, your agent edits the document you're looking at. You see
+changes land on the canvas as it works. That's the good experience — use it.
+
+**With Pen.app closed**, the agent still works, but headless: it builds a `.pen`
+file you open afterwards. Fine for CI and batch jobs, less fun for reviewing.
+
+So: **open Pen.app and leave it on the document you want changed.** Then check the
+connection before you ask for anything:
+
+```bash
+~/.dsh/skills/pen-dev/pen.sh sel
 ```
+
+- Prints your selection (or `NO_SELECTION`) → connected. You're good.
+- Prints `Could not connect to pen.dev desktop app` → Pen.app isn't running. Open
+  it, or tell your agent to work headless instead.
+
+Opening Pen.app once also solves authentication: it holds a session token that
+refreshes itself, and the skill reuses it. You should never have to run
+`pen login` if you've opened the app before. Details in
+[docs/pen-cli.md](docs/pen-cli.md#auth-flow).
+
+> **Working headless on purpose?** Pen.app is not required. Skip this section —
+> see [For developers](#for-developers).
 
 ---
 
 ## Install
 
+### Agent-first install (recommended)
+
+Point your agent at this repo and let it do the work:
+
+```
+Install the pen-dev skill for me: https://github.com/raeirie/pen-dev-skill
+
+Check that Node 22+ and the pen CLI are present, install the skill into your
+own skills directory, and tell me what I need to do next.
+```
+
+The agent reads the repo, runs the installer (or copies the files), verifies the
+`pen` CLI, and reports back. This is the intended path — the repo is small and
+plain, so there's nothing to interpret.
+
+Then ask for a design in the same session, or start a new one.
+
 ### One-line install
+
+Prefer to run it yourself:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/raeirie/pen-dev-skill/main/install.sh | bash
 ```
 
-The script detects where your harness keeps skills, installs there, checks that
-the `pen` CLI is present, and prints the next steps.
+The script finds your harness's skill directory, installs there, and checks that
+the `pen` CLI is present.
 
-### Manual install (DeepSeek Harness)
+### Manual install
+
+DeepSeek Harness:
 
 ```bash
 git clone https://github.com/raeirie/pen-dev-skill.git
@@ -68,8 +161,8 @@ mkdir -p ~/.dsh/skills
 cp -r pen-dev-skill ~/.dsh/skills/pen-dev
 ```
 
-Skills load from `~/.dsh/skills/` (user scope) or `<project>/.dsh/skills/` (project scope).
-The skill is picked up on the next session — no server restart needed.
+Skills load from `~/.dsh/skills/` (user scope) or `<project>/.dsh/skills/`
+(project scope), and are picked up on the next session — no restart needed.
 
 Verify:
 
@@ -77,223 +170,293 @@ Verify:
 ~/.dsh/skills/pen-dev/pen.sh --help
 ```
 
-### Other agent harnesses
+### Other harnesses
 
-`SKILL.md` follows the standard Agent Skills format (YAML frontmatter + markdown
-body), so it also works with Claude Code, Cursor, and anything else that reads
-`SKILL.md` files. The `pen.sh` driver is plain bash + python3 — port it if your
-harness differs.
-
-Point the installer at a different root:
+`SKILL.md` is standard Agent Skills format (YAML frontmatter + markdown), so it
+also works with Claude Code, Cursor, and anything else that reads `SKILL.md`. The
+driver is plain bash + python3 — port it if your harness differs.
 
 ```bash
 SKILL_ROOT=~/.claude/skills ./install.sh     # Claude Code
 SKILL_ROOT=./.dsh/skills     ./install.sh     # project-scoped, for DSH
 ```
 
+Pin a version with a `#ref` suffix:
+
+```bash
+REPO_URL="https://github.com/raeirie/pen-dev-skill.git#v0.1.0" ./install.sh
+```
+
 ---
 
-## Prerequisites
+## Use it
 
-| Requirement | Notes |
+Talk to your agent. Name the skill, describe the design.
+
+```
+Use pen-dev to design a pricing page for a B2B analytics tool.
+```
+
+That's the whole interface. The agent loads the skill, reads your file, and starts
+designing. There is no command to memorize and no `./pen-dev` executable — the
+skill is resolved by name.
+
+### Say what you want, in design terms
+
+You don't need to speak pen's schema. Talk like you'd talk to a designer:
+
+```
+Use pen-dev to design a settings page. Three sections: profile, notifications,
+billing. Calm, dense, no cards — we're not a consumer app.
+
+Use pen-dev to redesign this dashboard header. It's too busy; keep the KPIs,
+drop the decorative icons.
+
+Use pen-dev to give me three variants of this hero. Same copy, different emphasis.
+```
+
+Vague is fine as a start. The agent will read your file first and ask if it needs
+to.
+
+### Point at a node
+
+The most precise way to get an edit right is to **select the thing in Pen.app**,
+then describe the change. The selection carries the node ids, so the agent edits
+exactly what you picked instead of guessing which "card" you meant.
+
+**How to select:** click the layer in Pen.app — on the canvas or in the layers
+panel, whichever is easier. Shift-click to select several. Select a parent frame
+if you want the whole section changed; drill into a child if you want just the
+label.
+
+Then just talk:
+
+```
+Make this darker.                              ← card selected
+This should be the primary action.             ← button selected
+Tighten the spacing between these three.       ← three cards selected
+This heading is too big at this width.         ← text node selected
+```
+
+Some things worth knowing:
+
+- **Selection is live.** It reflects what's selected at the moment you ask. If
+  you select something, get distracted, then type a request, you may be pointing
+  at the wrong node — reselect first.
+- **Select the smallest thing that covers the change.** Selecting the whole page
+  and saying *"make this darker"* gives the agent a page to reason about.
+  Selecting the card gives it a target.
+- **Nested nodes work.** Selecting a label inside a button is fine — the agent
+  sees the path up to the root and knows the context.
+- **No selection is fine too**, as long as your words are unambiguous. *"Change
+  the hero headline to …"* works on a name. Selection just removes the guessing.
+- **Selection narrows, words decide.** If you select the pricing section but say
+  *"make the hero darker"*, the agent should follow your words and confirm. When
+  the two disagree, say which you meant.
+
+If the agent reports no selection when you have one, click the layer again and
+re-ask — don't let it guess. You can check what the agent will see yourself:
+
+```bash
+~/.dsh/skills/pen-dev/pen.sh seltree
+```
+
+That prints the selected subtree — ids, names, types, size, fill, layout, text —
+which is exactly the picture the agent gets.
+
+### What the agent does on its own
+
+You don't have to manage any of this — but it explains the behaviour you'll see:
+
+1. **Audits your file for a design system first** — existing tokens, themes, and
+   components. If your file already has a palette, it uses it. It will not invent
+   a parallel one unless you ask for a new look.
+2. **Sets tokens before building** — colours, spacing, radii, type.
+3. **Builds section by section and screenshots each one**, looking at the image
+   before moving on. That's why it sometimes pauses.
+4. **Checks its own work** — collapsed frames, clipping, alignment across cards.
+5. **Saves and reports.** For headless work it writes the `.pen` file; either way
+   it exports if you asked.
+
+### Reviewing the result
+
+You'll get a screenshot. Look at it — that's the point of the whole loop. Then:
+
+```
+Looks good. Export it as PNG.
+```
+
+```
+The middle tier should feel like the obvious choice. Make it taller and give it
+the accent border.
+```
+
+The agent edits in place and screenshots again. Iterate until it's right.
+
+### Choosing where the result goes
+
+| You want | Say |
 | --- | --- |
-| Node.js ≥ 22.19 | pen's own requirement |
-| `@pen.dev/cli` | `npm install -g @pen.dev/cli` |
-| A pen.dev account | free tier is enough |
-| Python 3 | only for the helper scripts |
+| Edits on the canvas you're looking at | *"…in the file I have open"* (with Pen.app running) |
+| A `.pen` file to open later | *"…and save it to `pricing.pen`"* |
+| A PNG | *"Export it as PNG"* |
+| Code | *"Export it as HTML with Tailwind"* |
 
 ---
 
-## Authentication
+## Troubleshooting
 
-The CLI needs a session token. There are three routes, in order of convenience:
+Start with the symptom you actually see.
 
-**1. Reuse the desktop app's token (recommended).** If you've used Pen.app before, it
-already holds a valid session that it refreshes automatically. The driver does this
-for you on every headless run — you don't need to do anything. To do it by hand:
+| What you see | What's happening | Fix |
+| --- | --- | --- |
+| *"Could not connect to pen.dev desktop app"* | Pen.app isn't running | Open Pen.app, or ask for headless work |
+| `Unauthorized` / auth errors | CLI session token expired | Open Pen.app once — the skill reuses its token. Or `pen login` |
+| The agent says it can't find what you meant | No selection, or an ambiguous name | Select the layer in Pen.app and ask again |
+| A frame shows a permanent "generating" state | `placeholder` was never cleared | Ask the agent to finish that frame — it's a known failure mode |
+| Nothing appears on the canvas | You're in headless mode | Ask it to work in the open file instead, or open the `.pen` it saved |
+| Output looks structurally fine but wrong | It didn't look at the screenshot | Ask it to screenshot and check before continuing |
+| `listen EPERM` / `EINVAL` on the socket | Sandbox blocked `~/.pencil`, or the socket path is too long | Headless runs need a short `HOME` — the driver handles it; see [docs/pen-cli.md](docs/pen-cli.md#sandbox-notes) |
 
-```bash
-python3 - <<'PY'
-import json
-d = json.load(open('/Users/arie/.pencil/session-desktop.json'))
-json.dump({"email": d["email"], "token": d["token"]},
-          open('/tmp/ph/.pencil/session-cli.json', 'w'))
-PY
-```
-
-This is why the CLI's own token expiring is a non-event: an expired CLI session
-heals itself on the next run, as long as Pen.app has been opened at some point.
-
-**2. `pen login`** — interactive email + password or OTP. Use this if the desktop
-app was never opened.
-
-**3. `PEN_CLI_KEY`** — an org-scoped key from the Developer Keys section of your
-pen.dev org settings. Takes precedence over the stored session. Good for CI.
-
-Check status any time:
+Two things you can always check yourself:
 
 ```bash
-pen status
+pen status                      # auth state and account
+~/.dsh/skills/pen-dev/pen.sh sel  # is the live app connected, and what's selected
 ```
+
+**If a design came out wrong**, the most useful feedback is visual and specific:
+*"the CTAs don't line up across the three cards"* beats *"make it better"*. The
+agent can act on the first one.
 
 ---
 
-## Usage
+## For agents
 
-### Headless — create or edit a `.pen` file
+If you're a model reading this to decide whether to use the skill: **read
+[SKILL.md](SKILL.md)** — that's the operating manual, not this file. This README
+is for the human.
 
-```bash
-./pen.sh multi design.pen < build.js
-```
+The short version of what `SKILL.md` enforces:
 
-No GUI involved. `build.js` holds the design code; `save()` runs at the end.
+- Audit the file for existing tokens/components **before** designing; reuse them
+- Set `layout` explicitly on every container (frames default to horizontal)
+- Text needs a `fill`; wrapping needs `textGrowth:"fixed-width"`
+- Build incrementally, screenshot each section, fix what looks wrong
+- Clear `placeholder:false` on every touched root frame before reporting done
+- `save()` in headless mode
+- Reference tokens as `"$token"`; instance components as `type:"ref"`
 
-### Live — edit the canvas open in Pen.app
-
-```bash
-./pen.sh app < build.js
-```
-
-Changes land in the open document immediately and appear on the canvas as you go.
-Requires Pen.app to be running.
-
-### Point at a frame
-
-Select layers in Pen.app, then:
-
-```bash
-./pen.sh sel        # what's selected + canvas state
-./pen.sh seltree    # the selected subtree as a readable tree
-```
-
-The canvas selection is the pointer — it carries node ids, so the agent acts on
-exactly what was picked instead of guessing from a name.
-
-### Extract screenshots so you can *look* at the result
-
-```bash
-./pen.sh app < build.js | python3 pen-shots.py ./pen-shots
-```
-
-Screenshots are how you know the design is actually right. See
-[docs/visual-verification.md](docs/visual-verification.md).
+The driver, the `@call` chunking, and the screenshot extraction are documented
+under [For developers](#for-developers). You do not need them to operate the
+skill — `SKILL.md` tells you which command to run.
 
 ---
 
-## The script format
+## For developers
 
-`pen.sh` takes JavaScript that runs inside pen's `execute` tool. The shell is
-line-oriented — one tool call per line — so `pen.sh` wraps a multi-line script into
-a single `execute({input: "..."})` call.
+Everything below is the plumbing. You don't need it to use the skill.
 
-Use `@call` on its own line to split a script into several `execute` calls inside
-**one** session, so ids captured in one chunk are usable in the next:
+### The driver
+
+```bash
+SKILL=~/.dsh/skills/pen-dev
+
+$SKILL/pen.sh multi out.pen [--in in.pen] < build.js   # headless: build a file
+$SKILL/pen.sh app < build.js                           # live: edit open canvas
+$SKILL/pen.sh sel                                      # selection + canvas state
+$SKILL/pen.sh seltree                                  # selected subtree as a tree
+```
+
+`multi` appends `save()` and runs headless with `HOME=/tmp/ph` — the DSH sandbox
+blocks the real `~/.pencil`, and unix socket paths cap at ~104 characters. `app`
+uses the real `HOME` because it only *connects* to the running app's socket.
+
+### The script format
+
+pen's interactive shell is line-oriented: one tool call per line. Multi-line
+JavaScript must arrive as a single `execute({ input: "..." })` call, JSON-escaped.
+`pen.sh` does that wrapping for you.
+
+Put `@call` on its own line to split a script into several `execute` calls
+**inside one session**, so ids stay in scope:
 
 ```js
-// chunk 1
-page = Insert(document, {type:"frame", name:"Landing", width:1440, ...})
+page = Insert(document, {type:"frame", name:"Landing", width:1440, layout:"vertical"})
 
 @call
 
-// chunk 2 — `page` is still in scope
-hero = Insert(page, {type:"frame", name:"Hero", layout:"vertical", ...})
+hero = Insert(page, {type:"frame", name:"Hero", layout:"vertical"})
 ```
 
----
+Separate `pen` invocations do not share globals. One session, `@call` chunks.
 
-## What the skill teaches
+### The tool surface
 
-The full instructions live in [SKILL.md](SKILL.md). In short, it covers:
+`execute` exposes `Insert`, `Copy`, `Update`, `Replace`, `Move`, `Delete`,
+`Generate`, `SetVariables`, `GetVariables`, `Get`, `Print`, `TakeScreenshot`,
+`Export`, `FindEmptySpace`. The shell also has `get_app_state`, `get_style`,
+`read_skill`, and `browser`.
 
-- **Auditing for an existing design system first** — tokens, components, themes — and
-  reusing them instead of inventing a parallel palette
-- **The `.pen` schema** — and the CSS habits that don't transfer to it
-- **Reading and writing the canvas** — `Insert`, `Update`, `Replace`, `Copy`,
-  `Delete`, `Get`, `SetVariables`, `Generate`, `Export`
-- **Components and instances** — `type:"ref"`, `descendants`, and the rules about
-  what can and can't be overridden
-- **Variant boards** — producing real alternatives, not recolours
-- **Verification** — screenshots, clipping checks, collapsed-size checks, and the
-  `placeholder` lifecycle
-- **The gotchas** — see below
+Full API: [docs/execute-api.md](docs/execute-api.md). CLI reference:
+[docs/pen-cli.md](docs/pen-cli.md). How the layers fit:
+[docs/architecture.md](docs/architecture.md). Why screenshots are non-negotiable:
+[docs/visual-verification.md](docs/visual-verification.md).
 
-### Gotchas this skill exists to prevent
+### Screenshots
 
-| Symptom | Cause |
-| --- | --- |
-| `listen EPERM` / `EINVAL` on the socket | Sandbox blocks `~/.pencil`; socket paths cap at ~104 chars. Run headless with `HOME=/tmp/ph` |
-| `Unauthorized` from the API | CLI session token expired. Copy the desktop app's token |
-| Button label renders *outside* the button | `Insert` appends to the parent's children — nest it under the button's id |
-| Frame collapses to zero | A `fit_content` parent whose children are all `fill_container` |
-| Elements stack in a row when you wanted a column | Frames default to `layout:"horizontal"` |
-| `fully clipped` on a component instance | Usually a false positive — confirm with a screenshot |
-| Frame stuck showing "generating" | `placeholder:false` was never set |
-| A new `execute` call can't see an id from the previous one | Separate `pen` invocations don't share globals. Use `@call` chunks in one session |
+`TakeScreenshot` returns base64 PNGs inside the CLI's text output.
+`pen-shots.py` extracts them to files so they can be looked at:
 
----
+```bash
+$SKILL/pen.sh app < build.js | python3 $SKILL/pen-shots.py ./pen-shots
+```
 
-## Maintaining this skill
+### Keeping the installed copy in sync
 
-The repository root **is** the skill — `SKILL.md` sits at the top level next to
-the scripts it references. That means the install is a copy, and a fork works
-exactly like the original.
+The repository root **is** the skill, so installing is a copy. Edit in the repo,
+not in `~/.dsh/skills/`, or the two drift.
 
-**Keep the installed copy in sync with the repo.** If you edit `SKILL.md` in
-`~/.dsh/skills/pen-dev/`, the repo doesn't know. Two ways to avoid the drift:
-
-*Symlink (one copy, no drift):*
+**Symlink (one copy, no drift)** — use this if you're changing the skill:
 
 ```bash
 ln -s ~/Projects/skill/pen-dev-skill ~/.dsh/skills/pen-dev
 ```
 
-Edit in the repo, and the installed skill updates with it. This is the setup to
-use if you're changing the skill.
-
-*Copy (stable install):*
+**Copy (stable install)** — use this to pin it:
 
 ```bash
 cd ~/Projects/skill/pen-dev-skill
 cp SKILL.md pen.sh pen-sel.py pen-shots.py ~/.dsh/skills/pen-dev/
 ```
 
-Use this if you want the installed skill pinned and unaffected by repo changes.
+### What belongs where
 
-**CI runs on every push** and checks the things that break silently: frontmatter
-is valid YAML with a kebab-case name and a routable description, internal doc
-links resolve, the shell and Python helpers parse, the examples are valid
-JavaScript, and the installer actually installs.
+The skill is what an agent needs on **every** run. Depth goes in `docs/` and gets
+linked. If a detail only matters for one kind of task, it doesn't belong in
+`SKILL.md`. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-**Releases:** each version is a GitHub release with a tag. The one-line install
-points at `main`, so it always gets the latest. Pin to a specific version with a
-`#ref` suffix:
+CI runs on every push and checks the things that break silently: frontmatter is
+valid YAML with a kebab-case name and a routable description, internal doc links
+resolve, the shell and Python helpers parse, the examples are valid JavaScript,
+and the installer actually installs.
 
-```bash
-REPO_URL="https://github.com/raeirie/pen-dev-skill.git#v0.1.0" ./install.sh
-```
-
-The installed `SKILL.md` then carries that version's `version:` field, so an
-agent can tell which revision it is running.
-
-**What belongs in the skill vs. the docs:** the skill is what an agent needs on
-*every* run. Depth goes in `docs/` and gets linked. If a detail is only needed
-for one kind of task, it shouldn't be in the always-loaded `SKILL.md`.
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the rules on where a new rule belongs
-and how to verify it.
+**Releases** are GitHub releases with tags. The one-line install points at `main`.
+The installed `SKILL.md` carries that revision's `version:` field, so an agent can
+tell which version it's running.
 
 ---
 
 ## Documentation
 
-- [SKILL.md](SKILL.md) — the skill itself
+- [SKILL.md](SKILL.md) — the operating manual the agent follows
 - [CHANGELOG.md](CHANGELOG.md) — what changed in each version
-- [docs/pen-cli.md](docs/pen-cli.md) — CLI reference: commands, flags, auth, env vars
-- [docs/execute-api.md](docs/execute-api.md) — the `execute` tool's full API surface
-- [docs/visual-verification.md](docs/visual-verification.md) — screenshots, clipping
-  checks, and how to trust what you see
-- [docs/architecture.md](docs/architecture.md) — how the pieces fit together
+- [docs/pen-cli.md](docs/pen-cli.md) — CLI commands, flags, auth, sandbox notes
+- [docs/execute-api.md](docs/execute-api.md) — the full `execute` API
+- [docs/visual-verification.md](docs/visual-verification.md) — screenshots and clipping
+- [docs/architecture.md](docs/architecture.md) — how the pieces fit
 - [examples/](examples/) — runnable scripts
+- [CONTRIBUTING.md](CONTRIBUTING.md) — where a new rule belongs
 
 ---
 
@@ -301,5 +464,5 @@ and how to verify it.
 
 MIT — see [LICENSE](LICENSE).
 
-The skill is unofficial. pen.dev is a product of its authors; this repo just teaches
-agents how to drive their CLI.
+The skill is unofficial. pen.dev is a product of its authors; this repo just
+teaches agents how to drive their CLI.

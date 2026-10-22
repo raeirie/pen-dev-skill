@@ -13,7 +13,22 @@ even when no code moved.
 
 ## [Unreleased]
 
-Nothing yet.
+### Changed
+
+- README restructured around who is reading it. The old Usage section documented
+  `pen.sh` flags, the `@call` script format and screenshot piping — plumbing only
+  an agent or maintainer needs — where a first-time human expected to find out
+  what to ask for. Usage is now "talk to your agent, describe the design", and the
+  driver details moved to a "For developers" section.
+- Added a contents block, and an explicit "Open Pen.app once" step: without the
+  app running the skill works headless, which is a different experience and the
+  usual reason a first run looks like nothing happened.
+- Added a "Point at a node" section covering how to select layers in Pen.app,
+  what selection does and does not decide, and how to check it with
+  `pen.sh seltree`.
+- Install now leads with an agent-first prompt (point your agent at the repo);
+  the one-line, manual and other-harness paths follow.
+- Troubleshooting is now symptom-first, so a user can search for what they see.
 
 ---
 
