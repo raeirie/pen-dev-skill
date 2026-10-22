@@ -74,12 +74,15 @@ interface ExportOptions {
 
 ## Rules that bite
 
-**`Get` requires a visitor.** `Get("id", {depth:0})` throws — reading without a
-visitor would dump the whole document.
+**`Get` needs a path or a visitor.** `Get()` alone throws — reading the whole
+document without a visitor would return everything.
 
 ```js
-Get("id", (n,c) => Print(n.id, n.name))     // ✅
-Get((n,c) => {c.skipChildren(); Print(n.name)})  // ✅
+Get("id")                                   // ✅ the node, children elided
+Get("id", {depth:0})                        // ✅ same; children shown as "..."
+Get("id", (n,c) => Print(n.id, n.name))     // ✅ walk a subtree
+Get((n,c) => {c.skipChildren(); Print(n.name)})  // ✅ top-level frames
+Get()                                       // ❌ throws
 ```
 
 **Paths are ids, or slash-paths into instances.** `instanceId/childId` works at

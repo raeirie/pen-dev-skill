@@ -120,28 +120,27 @@ name.
 
 ## The skill file
 
-`SKILL.md` is the part a model reads. Its structure:
+`SKILL.md` is the part a model reads on every run. Its structure, top to bottom:
 
 | Section | Purpose |
 | --- | --- |
 | Frontmatter | `name` + `description` — the trigger the agent routes on |
-| Two modes | Headless vs. live app, and when to use each |
-| Sandbox constraints | The socket and auth workarounds, stated once |
-| Quick start | Copy-pasteable invocations |
+| Two modes | Headless vs. live app, and the sandbox workarounds each needs |
+| Quick start | Copy-pasteable invocations, plus why `@call` exists |
 | Pointing at a frame | The selection workflow |
 | Auth | The three routes, in order of convenience |
-| The shell is line-oriented | Why `@call` exists |
-| Workflow | The ordered steps, with completion criteria |
+| Workflow | The ordered steps, each with a completion criterion |
 | Finishing checklist | The completion bar for a design |
-| Critical .pen schema rules | The rules that break things |
+| Critical .pen schema rules | The rules that break builds |
 | Reusing an existing design system | The audit, and what to do with what it finds |
-| Reading an existing project | How to inspect before editing |
-| Sibling vs child | The most common bug |
-| Making a variant | How to produce real alternatives |
-| Clipping reports on instances | Why they're often wrong |
-| Aligning CTAs | The fill_container technique |
-| Visual verification is the point | The screenshot loop |
+| Reference | Pointers into `docs/`, each with the situation that fires it |
 | Style guidance | Design judgement |
+
+Three things moved out of `SKILL.md` and behind pointers, because only some runs
+need them: variants boards and unequal-height cards
+([docs/variants.md](variants.md)), the screenshot and clipping checks
+([docs/visual-verification.md](visual-verification.md)), and the full `execute`
+API ([docs/execute-api.md](execute-api.md)).
 
 ### Why the description matters
 
@@ -149,8 +148,9 @@ The frontmatter `description` is the skill's **context pointer** — it is alway
 loaded, so it must carry the trigger branches. It is the only thing the router
 reads to decide whether the skill applies.
 
-It is written to fire on: creating, editing, reviewing, or exporting pen.dev
-designs; operating the Pen.app canvas; building UI mockups in pen.dev.
+It is written to fire on: designing a pen.dev screen, page, mockup, dashboard or
+component; changing whatever layer is selected in Pen.app; exporting to PNG or
+HTML.
 
 ### Model-invoked vs user-invoked
 
@@ -195,7 +195,9 @@ break, or to "Style guidance" if it's a judgement call. Rules that prevent
 breaks belong near the schema rules; taste belongs at the end.
 
 **A new topic:** the skill stays short by pushing detail into `docs/` and
-pointing at it. But anything an agent needs on *every* run belongs inline.
+pointing at it. Anything an agent needs on *every* run belongs inline; anything
+only some runs need gets a row in the Reference table, worded for the situation
+that fires it.
 
 **Testing a change:** drive a live document.
 

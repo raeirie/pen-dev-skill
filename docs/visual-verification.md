@@ -1,8 +1,11 @@
 # Visual verification
 
-The difference between a plausible design and a good one is whether anyone
-looked at it. This doc covers the checks that catch what structural validation
-misses.
+The difference between a plausible design and a good one is whether anyone looked
+at it. This doc covers the checks that catch what structural validation misses.
+
+Read it when a screenshot looks wrong, when clipping fires, or when you need the
+structural checks. The rule itself — screenshot each section and look at it — is
+in `SKILL.md`.
 
 ---
 
@@ -12,9 +15,9 @@ misses.
 build a section  →  screenshot it  →  look at it  →  fix  →  next section
 ```
 
-Do not build a whole page and debug at the end. A layout error in section one
-propagates into every section after it, and you end up rewriting work that was
-never wrong.
+Building a whole page and debugging at the end fails twice: a layout error in
+section one propagates into every section after it, and you end up rewriting work
+that was never wrong.
 
 ---
 
@@ -35,6 +38,12 @@ Each file is named after the node id.
 **Screenshot the smallest meaningful node.** A section frame, not the whole
 document — large nodes cost more tokens and obscure detail.
 
+**Screenshot a node that carries the background.** A section with no `fill` of
+its own renders on transparency. Light text on it looks blank in the PNG while
+looking correct in the app, so the screenshot reports a bug the design does not
+have — or hides one it does. Shoot the parent that owns the fill, or give the
+section its own.
+
 ---
 
 ## What screenshots catch that structure doesn't
@@ -43,7 +52,7 @@ document — large nodes cost more tokens and obscure detail.
 
 Frames default to `layout:"horizontal"`. A wrapper you meant to stack silently
 arranges its children in a row. At board scale this still reads as a plausible
-thumbnail — it only becomes obvious when you screenshot the variant alone.
+thumbnail — it only becomes obvious when you screenshot the section alone.
 
 ```js
 Update("wrapperId", {layout:"vertical"})
@@ -51,9 +60,10 @@ Update("wrapperId", {layout:"vertical"})
 
 ### Instance clipping false positives
 
-`ctx.problems === "fully clipped"` fires on `ref` instances whose reported
-bounds sit outside the parent, **even when they render correctly**. Confirm with
-a screenshot before "fixing" it.
+`ctx.problems === "fully clipped"` fires on `ref` instances whose reported bounds
+sit outside the parent, **even when they render correctly**. Confirm with a
+screenshot before "fixing" it. Trust the pixels, not `ctx.problems`, for
+instances.
 
 Real clipping is usually one of:
 
@@ -63,10 +73,8 @@ Real clipping is usually one of:
 
 ### Alignment drift
 
-Cards with different content lengths put their buttons at different heights.
-Fix by giving the row a fixed height, the cards `height:"fill_container"`, and
-the flexible middle section `height:"fill_container"` so it absorbs the slack
-and pushes the button down.
+Cards with different content lengths put their buttons at different heights. See
+[variants.md](variants.md#cards-with-unequal-content) for the fix.
 
 ### Hidden overflow
 
@@ -80,7 +88,7 @@ structural read.
 Cheaper than screenshots — use these for geometry, screenshots for appearance.
 
 ```js
-// Layout problems
+// Layout problems, from the document root
 Get(root, (n,c) => { if(c.problems) Print("PROBLEM", n.name, c.problems) })
 
 // Section sizes
@@ -92,25 +100,12 @@ Get(card, (n,c) => c.parentCtx &&
   Print(n.name, "off-center"))
 ```
 
-pen also reports collapsed/zero-size nodes automatically — a node with
+`root` and `document` both address the document root. A visitor run from it
+receives the top-level frames at `depth:0`, so `c.depth === 1` selects their
+children.
+
+pen also reports collapsed and zero-size nodes automatically — a node with
 `fit_content` sizing and no children to size from.
-
----
-
-## The finishing checklist
-
-Run before reporting a design as done:
-
-- [ ] Final screenshot reviewed **by eye** — it looks right, not just structurally valid
-- [ ] `placeholder:false` set on every frame created or modified
-- [ ] No "STILL GENERATING" output from the placeholder check
-- [ ] No collapsed/zero-size nodes
-- [ ] Clipping checked — and confirmed against a screenshot, since instance
-      clipping reports are often false positives
-- [ ] CTAs and repeated elements aligned across sibling cards
-- [ ] Every colour, spacing, radius and font traces back to a token in the file
-- [ ] Repeated UI is an instance of an existing component where one covers it
-- [ ] `save()` called (headless) and the `.pen` file confirmed on disk
 
 ---
 
@@ -139,48 +134,18 @@ Get((n,c) => {c.skipChildren(); if(n.placeholder) Print("STILL GENERATING:", n.n
 
 ---
 
-## The design-system audit
+## Screenshot or export?
 
-Before designing anything, find out whether the file already carries a design
-system — tokens, components, themes. If it does, that system is the palette and
-the component library for the work.
+`TakeScreenshot` attaches images to the response — for checking your own work.
+`Export` writes files — for delivering to the user.
 
 ```js
-const vars = GetVariables()
-Print("TOKENS:", Object.keys(vars.variables || {}).length)
-Print("THEMES:", JSON.stringify(vars.themes))
-Get(n => n.reusable && Print("COMP", n.id, n.name))
-Get((n,c) => {c.skipChildren(); Print("FRAME", n.id, n.name)})
+Export([heroId], "png", "./exports")             // writes <nodeId>.png at 2x
+Export([pageId], "html-tailwind", "./out.html")  // one HTML file
 ```
 
-| Finding | Action |
-| --- | --- |
-| Many tokens + components | Full system — inherit everything, invent nothing |
-| Tokens only | Use the tokens; build components fresh, styled with them |
-| Neither | No system — use `get_style()` and create tokens |
+For image formats the path is a directory and each node becomes
+`<nodeId>.<ext>`. For HTML formats it is the output file. For `pdf`, all nodes
+combine into one multi-page file.
 
-**Themed tokens** resolve per theme. Reference the semantic name
-(`$ci-sem-color-text-strong`) and light/dark both stay correct; hardcoding the
-hex breaks one of them.
-
-Reuse:
-
-- tokens as `"$token"`
-- components via `type:"ref"` with `descendants:{ "Label": {content:"..."} }`
-- the file's own spacing and radius scale, not invented pixel values
-
-Deviate only when the user asks, or when the system genuinely can't express the
-request — and say so rather than silently diverging.
-
----
-
-## Style guidance
-
-- Don't wrap every element in its own card — that's the generic-AI look. Use a
-  container only when it has a structural or functional purpose
-- Reserve accent colour for actions; don't dilute it across decoration
-- Don't stack sections with the same density — alternate text-heavy and visual
-- One alignment axis per section; never mix centred and left in one section
-- Body text never below 14px; clear size jumps between hierarchy levels
-- Hero = the whole pitch compressed: one idea, one headline, one CTA
-- Never hand-draw artwork — use `Generate` for logos and illustrations
+See [execute-api.md](execute-api.md#screenshot-and-export) for the full options.

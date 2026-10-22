@@ -24,9 +24,13 @@ Ask where it belongs:
 | --- | --- |
 | Prevents a break (schema, API) | "Critical .pen schema rules" |
 | A judgement call (taste) | "Style guidance" |
-| A step in the process | "Workflow", with a completion criterion |
+| A step every run takes | "Workflow", with a completion criterion |
 | A completion bar | "Finishing checklist" |
-| Deep reference | `docs/`, linked from the skill |
+| Needed by only some runs | a file in `docs/`, plus a row in the Reference table |
+
+The Reference table is the disclosure boundary: a row's "When" column is the
+context pointer, so word it for the situation that fires it (*"a screenshot looks
+wrong"*), not for the topic (*"clipping"*).
 
 **Every workflow step ends on a checkable criterion.** "Be consistent with the
 design system" is unactionable; "every colour traces back to a token in the
@@ -37,6 +41,9 @@ failure into mind; "clear the placeholder when the frame is done" lands on the
 action.
 
 **One trigger per branch.** If two words name the same case, use one.
+
+**One home per fact.** A rule lives where the agent reads it at the moment it
+applies, and elsewhere is a link. Two copies go stale separately.
 
 ## Adding a helper script
 

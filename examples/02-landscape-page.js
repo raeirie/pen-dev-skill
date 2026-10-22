@@ -66,8 +66,10 @@ btn = Insert(hero, {
 })
 Insert(btn, {type:"text", name:"Label", content:"Start building free", fontFamily:"$font-b", fontSize:15, fontWeight:"600", fill:"$fg"})
 
-// --- 5. Verify the section, then move on. ---
-TakeScreenshot([hero])
+// --- 5. Verify the section, then move on. Screenshot a node that carries the
+// background: hero has no fill of its own, so screenshotting it alone renders
+// white text on transparency. ---
+TakeScreenshot([page])
 
 // --- 6. Finish: clear the placeholder. A frame left flagged shows "generating". ---
 Update(page, {placeholder:false})

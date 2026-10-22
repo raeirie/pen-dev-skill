@@ -29,6 +29,62 @@ even when no code moved.
 - Install now leads with an agent-first prompt (point your agent at the repo);
   the one-line, manual and other-harness paths follow.
 - Troubleshooting is now symptom-first, so a user can search for what they see.
+- README's "For agents" section listed seven rules that `SKILL.md` already owns,
+  so it was a second copy waiting to drift. It now points at `SKILL.md` and
+  describes what is there.
+
+- **`SKILL.md` rewritten against a writing-for-agents audit.** Every rule it
+  carried is still there; the structure and wording changed, and three factual
+  errors went with them (see Fixed).
+  - The description leads with the task ("Design in pen.dev from the terminal")
+    and names two branches instead of five overlapping synonyms: making a
+    design, and changing the selected layer in Pen.app. Export stays in the
+    description as part of a design request rather than a branch of its own.
+  - Workflow steps each end on a checkable **Done when** criterion. Three were
+    vague or absent (read the guides, pick a style, clear placeholder and
+    save); they are now falsifiable.
+  - `placeholder` was stated three times and the design-system audit twice. Each
+    now has one home: the schema rule states the promise, the workflow step
+    states the check, the audit section states the audit.
+  - Prohibitions rewritten as the positive target ("use a container only when
+    it has a structural purpose" rather than "don't wrap everything in a card").
+  - `docs/visual-verification.md` lost its own copy of the style guidance and of
+    the finishing checklist; both live in `SKILL.md`.
+
+### Fixed
+
+- **`Get` rule was wrong.** `SKILL.md` claimed `Get("id", {depth:0})` throws
+  without a visitor. Verified against pen CLI v0.3.5: only a bare `Get()`
+  throws. `Get(id)`, `Get(id, {depth:0})` and `Get(visitor)` all work. The
+  old wording would have pushed an agent into verbose visitor callbacks for a
+  simple node read.
+- **Screenshotting a fill-less section hides light text.** `examples/02` shot
+  the `hero` frame, which carries no `fill`, so it rendered on transparency and
+  the white headline vanished from the PNG while looking correct in the app.
+  The example now shoots the page frame, and the screenshot rule states that
+  the target must own the background.
+- **Version drift.** The frontmatter said `0.1.1` while the body said
+  "Skill version 0.1.0". The body line is gone; the frontmatter is the single
+  source.
+- **Undefined `root` in examples.** `Get(root, …)` appeared in `SKILL.md` and
+  `docs/visual-verification.md` without ever saying what `root` is. It is the
+  document root, same as `document`; both now say so.
+
+### Added
+
+- `docs/variants.md` — variants boards, the three-variant rule, the
+  screen-level check, and the unequal-height card technique. Disclosed out of
+  `SKILL.md` behind a Reference row, since only variant requests need it.
+- `SKILL.md` gains a Reference table: one row per `docs/` file, worded for the
+  situation that fires it.
+
+### Removed
+
+- `SKILL.md`'s "Reading an existing project before changing it" section, which
+  repeated the audit. Its one unique detail — how to inspect a component before
+  instancing it — moved into the audit section.
+- `SKILL.md`'s "Aligning CTAs across sibling cards" and "Making a variant"
+  sections, moved to `docs/variants.md`.
 
 ---
 

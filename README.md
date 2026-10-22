@@ -337,19 +337,13 @@ If you're a model reading this to decide whether to use the skill: **read
 [SKILL.md](SKILL.md)** — that's the operating manual, not this file. This README
 is for the human.
 
-The short version of what `SKILL.md` enforces:
+`SKILL.md` opens with the two modes and the four-command quick start, then the
+workflow with a completion criterion per step, the finishing checklist, the
+schema rules that break builds, and the design-system audit. Depth lives in
+[docs/](docs/) behind pointers; read one when the matching situation comes up.
 
-- Audit the file for existing tokens/components **before** designing; reuse them
-- Set `layout` explicitly on every container (frames default to horizontal)
-- Text needs a `fill`; wrapping needs `textGrowth:"fixed-width"`
-- Build incrementally, screenshot each section, fix what looks wrong
-- Clear `placeholder:false` on every touched root frame before reporting done
-- `save()` in headless mode
-- Reference tokens as `"$token"`; instance components as `type:"ref"`
-
-The driver, the `@call` chunking, and the screenshot extraction are documented
-under [For developers](#for-developers). You do not need them to operate the
-skill — `SKILL.md` tells you which command to run.
+You do not need the driver internals below to operate the skill — `SKILL.md`
+tells you which command to run.
 
 ---
 
@@ -400,8 +394,9 @@ Separate `pen` invocations do not share globals. One session, `@call` chunks.
 
 Full API: [docs/execute-api.md](docs/execute-api.md). CLI reference:
 [docs/pen-cli.md](docs/pen-cli.md). How the layers fit:
-[docs/architecture.md](docs/architecture.md). Why screenshots are non-negotiable:
-[docs/visual-verification.md](docs/visual-verification.md).
+[docs/architecture.md](docs/architecture.md). The verification checks:
+[docs/visual-verification.md](docs/visual-verification.md). Building variants:
+[docs/variants.md](docs/variants.md).
 
 ### Screenshots
 
@@ -453,7 +448,8 @@ tell which version it's running.
 - [CHANGELOG.md](CHANGELOG.md) — what changed in each version
 - [docs/pen-cli.md](docs/pen-cli.md) — CLI commands, flags, auth, sandbox notes
 - [docs/execute-api.md](docs/execute-api.md) — the full `execute` API
-- [docs/visual-verification.md](docs/visual-verification.md) — screenshots and clipping
+- [docs/visual-verification.md](docs/visual-verification.md) — the checks a screenshot catches
+- [docs/variants.md](docs/variants.md) — variants boards and unequal-height cards
 - [docs/architecture.md](docs/architecture.md) — how the pieces fit
 - [examples/](examples/) — runnable scripts
 - [CONTRIBUTING.md](CONTRIBUTING.md) — where a new rule belongs
