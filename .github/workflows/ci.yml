@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Validate shell script
-        run: bash -n pen.sh && echo "pen.sh: syntax OK"
+        run: "bash -n pen.sh && echo \"pen.sh: syntax OK\""
 
       - name: Validate python helpers
         run: |
