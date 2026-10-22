@@ -16,3 +16,8 @@ exports/
 # Scratch
 /tmp/
 *.log
+
+# Personal agent overlay — machine-specific, never shared.
+# AGENTS.md itself is tracked: it guides whoever works on the repo next.
+AGENTS.local.md
+CLAUDE.local.md

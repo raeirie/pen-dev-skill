@@ -72,11 +72,22 @@ even when no code moved.
 
 ### Added
 
+- `AGENTS.md` — the entry point for an agent working on this repo. It points at
+  `CONTRIBUTING.md` for where a rule belongs and `CHANGELOG.md#versioning-policy`
+  for bump rules rather than restating either, names the pre-commit checks, and
+  records the symlink gotcha: when the installed skill is a symlink to this
+  checkout, edits are live and there is no copy to sync.
 - `docs/variants.md` — variants boards, the three-variant rule, the
   screen-level check, and the unequal-height card technique. Disclosed out of
   `SKILL.md` behind a Reference row, since only variant requests need it.
 - `SKILL.md` gains a Reference table: one row per `docs/` file, worded for the
   situation that fires it.
+
+### Ignored
+
+- `AGENTS.local.md` and `CLAUDE.local.md` — the harness's machine-specific
+  overlay files. `AGENTS.md` itself stays tracked, so the guidance travels with
+  the repo.
 
 ### Removed
 

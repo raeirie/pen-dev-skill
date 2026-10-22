@@ -429,7 +429,8 @@ cp SKILL.md pen.sh pen-sel.py pen-shots.py ~/.dsh/skills/pen-dev/
 
 The skill is what an agent needs on **every** run. Depth goes in `docs/` and gets
 linked. If a detail only matters for one kind of task, it doesn't belong in
-`SKILL.md`. See [CONTRIBUTING.md](CONTRIBUTING.md).
+`SKILL.md`. See [CONTRIBUTING.md](CONTRIBUTING.md) for a human, or
+[AGENTS.md](AGENTS.md) for an agent working in this repo.
 
 CI runs on every push and checks the things that break silently: frontmatter is
 valid YAML with a kebab-case name and a routable description, internal doc links
@@ -453,6 +454,7 @@ tell which version it's running.
 - [docs/architecture.md](docs/architecture.md) — how the pieces fit
 - [examples/](examples/) — runnable scripts
 - [CONTRIBUTING.md](CONTRIBUTING.md) — where a new rule belongs
+- [AGENTS.md](AGENTS.md) — the same for an agent working on this repo
 
 ---
 
