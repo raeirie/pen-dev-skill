@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate shell script
+        run: bash -n pen.sh && echo "pen.sh: syntax OK"
+
+      - name: Validate python helpers
+        run: |
+          python3 -m py_compile pen-sel.py pen-shots.py
+          echo "helpers: syntax OK"
+
+      - name: Validate frontmatter
+        run: |
+          python3 - <<'PY'
+          import re, sys, pathlib
+          raw = pathlib.Path("SKILL.md").read_text()
+          m = re.match(r"^---\n(.*?)\n---\n", raw, re.S)
+          if not m:
+              sys.exit("SKILL.md: missing YAML frontmatter")
+          fm = m.group(1)
+          name = re.search(r"^name:\s*(.+)$", fm, re.M)
+          desc = re.search(r"^description:\s*(.+)$", fm, re.M)
+          if not name or not desc:
+              sys.exit("SKILL.md: frontmatter needs both name and description")
+          n = name.group(1).strip()
+          if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", n):
+              sys.exit(f"SKILL.md: name '{n}' must be kebab-case")
+          d = desc.group(1).strip()
+          if len(d) < 40:
+              sys.exit("SKILL.md: description is too short to route on")
+          print(f"name: {n}")
+          print(f"description length: {len(d)}")
+          PY
+
+      - name: Check internal doc links
+        run: |
+          python3 - <<'PY'
+          import pathlib, re, sys
+          root = pathlib.Path(".")
+          bad = []
+          for md in root.rglob("*.md"):
+              if ".git" in md.parts:
+                  continue
+              for link in re.findall(r"\]\(([^)#][^)]*)\)", md.read_text()):
+                  if link.startswith(("http://", "https://", "mailto:")):
+                      continue
+                  target = (md.parent / link.split("#")[0]).resolve()
+                  if not target.exists():
+                      bad.append(f"{md}: {link}")
+          if bad:
+              sys.exit("Broken links:\n" + "\n".join(bad))
+          print("all internal links resolve")
+          PY
+
+      - name: Check examples parse
+        run: |
+          for f in examples/*.js; do
+            node --check "$f" || exit 1
+          done
+          echo "examples: syntax OK"
+
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install the skill into a temp root
+        run: SKILL_ROOT=$RUNNER_TEMP/skills ./install.sh
+
+      - name: Verify the skill landed
+        run: |
+          test -f "$RUNNER_TEMP/skills/pen-dev/SKILL.md"
+          test -x "$RUNNER_TEMP/skills/pen-dev/pen.sh"
+          echo "skill installed correctly"

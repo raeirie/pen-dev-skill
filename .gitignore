@@ -4,6 +4,10 @@
 # Node
 node_modules/
 
+# Python
+__pycache__/
+*.pyc
+
 # Skill output
 *.pen
 pen-shots/

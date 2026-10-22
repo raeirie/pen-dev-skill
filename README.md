@@ -48,10 +48,19 @@ docs/             deeper reference material
 
 ## Install
 
-### DeepSeek Harness (recommended)
+### One-line install
 
 ```bash
-git clone https://github.com/<you>/pen-dev-skill.git
+curl -fsSL https://raw.githubusercontent.com/raeirie/pen-dev-skill/main/install.sh | bash
+```
+
+The script detects where your harness keeps skills, installs there, checks that
+the `pen` CLI is present, and prints the next steps.
+
+### Manual install (DeepSeek Harness)
+
+```bash
+git clone https://github.com/raeirie/pen-dev-skill.git
 mkdir -p ~/.dsh/skills
 cp -r pen-dev-skill ~/.dsh/skills/pen-dev
 ```
@@ -71,6 +80,13 @@ Verify:
 body), so it also works with Claude Code, Cursor, and anything else that reads
 `SKILL.md` files. The `pen.sh` driver is plain bash + python3 — port it if your
 harness differs.
+
+Point the installer at a different root:
+
+```bash
+SKILL_ROOT=~/.claude/skills ./install.sh     # Claude Code
+SKILL_ROOT=./.dsh/skills     ./install.sh     # project-scoped, for DSH
+```
 
 ---
 
@@ -210,6 +226,45 @@ The full instructions live in [SKILL.md](SKILL.md). In short, it covers:
 | `fully clipped` on a component instance | Usually a false positive — confirm with a screenshot |
 | Frame stuck showing "generating" | `placeholder:false` was never set |
 | A new `execute` call can't see an id from the previous one | Separate `pen` invocations don't share globals. Use `@call` chunks in one session |
+
+---
+
+## Maintaining this skill
+
+The repository root **is** the skill — `SKILL.md` sits at the top level next to
+the scripts it references. That means the install is a copy, and a fork works
+exactly like the original.
+
+**Keep the installed copy in sync with the repo.** If you edit `SKILL.md` in
+`~/.dsh/skills/pen-dev/`, the repo doesn't know. A convenient loop:
+
+```bash
+cd ~/Projects/skill/pen-dev-skill
+cp SKILL.md pen.sh pen-sel.py pen-shots.py ~/.dsh/skills/pen-dev/
+```
+
+Or point the installed skill at the repo with a symlink, so there's one copy:
+
+```bash
+ln -s ~/Projects/skill/pen-dev-skill ~/.dsh/skills/pen-dev
+```
+
+**CI runs on every push** and checks the things that break silently: frontmatter
+is valid YAML with a kebab-case name and a routable description, internal doc
+links resolve, the shell and Python helpers parse, the examples are valid
+JavaScript, and the installer actually installs.
+
+**Releases:** tag a version (`git tag v1.0.0 && git push --tags`) and the
+installer's pinned clone can use it. The raw `install.sh` URL points at `main`,
+so it always gets the latest — pin with `REPO_URL=...@v1.0.0` if you need
+reproducibility.
+
+**What belongs in the skill vs. the docs:** the skill is what an agent needs on
+*every* run. Depth goes in `docs/` and gets linked. If a detail is only needed
+for one kind of task, it shouldn't be in the always-loaded `SKILL.md`.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the rules on where a new rule belongs
+and how to verify it.
 
 ---
 
