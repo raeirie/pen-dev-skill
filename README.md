@@ -93,8 +93,8 @@ harness differs.
 The CLI needs a session token. There are three routes, in order of convenience:
 
 **1. Reuse the desktop app's token (recommended).** If you've used Pen.app before, it
-already holds a valid session that it refreshes automatically. The driver copies it
-into place on every run:
+already holds a valid session that it refreshes automatically. The driver does this
+for you on every headless run — you don't need to do anything. To do it by hand:
 
 ```bash
 python3 - <<'PY'
@@ -104,6 +104,9 @@ json.dump({"email": d["email"], "token": d["token"]},
           open('/tmp/ph/.pencil/session-cli.json', 'w'))
 PY
 ```
+
+This is why the CLI's own token expiring is a non-event: an expired CLI session
+heals itself on the next run, as long as Pen.app has been opened at some point.
 
 **2. `pen login`** — interactive email + password or OTP. Use this if the desktop
 app was never opened.
