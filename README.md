@@ -236,18 +236,25 @@ the scripts it references. That means the install is a copy, and a fork works
 exactly like the original.
 
 **Keep the installed copy in sync with the repo.** If you edit `SKILL.md` in
-`~/.dsh/skills/pen-dev/`, the repo doesn't know. A convenient loop:
+`~/.dsh/skills/pen-dev/`, the repo doesn't know. Two ways to avoid the drift:
+
+*Symlink (one copy, no drift):*
+
+```bash
+ln -s ~/Projects/skill/pen-dev-skill ~/.dsh/skills/pen-dev
+```
+
+Edit in the repo, and the installed skill updates with it. This is the setup to
+use if you're changing the skill.
+
+*Copy (stable install):*
 
 ```bash
 cd ~/Projects/skill/pen-dev-skill
 cp SKILL.md pen.sh pen-sel.py pen-shots.py ~/.dsh/skills/pen-dev/
 ```
 
-Or point the installed skill at the repo with a symlink, so there's one copy:
-
-```bash
-ln -s ~/Projects/skill/pen-dev-skill ~/.dsh/skills/pen-dev
-```
+Use this if you want the installed skill pinned and unaffected by repo changes.
 
 **CI runs on every push** and checks the things that break silently: frontmatter
 is valid YAML with a kebab-case name and a routable description, internal doc
