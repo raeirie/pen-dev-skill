@@ -60,6 +60,28 @@ The driver is bash 3.2 compatible (macOS default). Keep it that way:
 ./pen.sh multi /tmp/test.pen < examples/02-landscape-page.js
 ```
 
+## Cutting a release
+
+Versions are for the **skill**, not the pen.dev CLI. A `SKILL.md` change can
+break a working setup even when no code moved.
+
+```bash
+# 1. bump the version in SKILL.md frontmatter
+#    (version: 0.2.0)
+# 2. add a section to CHANGELOG.md under a new heading
+# 3. commit, tag, push
+git commit -am "Release v0.2.0"
+git tag -a v0.2.0 -m "v0.2.0"
+git push && git push --tags
+
+# 4. publish the GitHub release
+gh release create v0.2.0 --generate-notes --title "v0.2.0"
+```
+
+Keep the `version:` in `SKILL.md` frontmatter and the CHANGELOG heading in step.
+The frontmatter version is what an agent can read to tell which revision it is
+running.
+
 ## Pull requests
 
 1. Say what broke and what you changed

@@ -1,12 +1,16 @@
 ---
 name: pen-dev
 description: Operate the pen.dev design tool from the terminal via its headless CLI. Use when the user wants to create, edit, review or export pen.dev designs (.pen files), operate the Pen.app canvas, or build UI mockups in pen.dev. Drives pen's design tools directly, reusing the file's own design system when it has one.
+version: 0.1.0
 ---
 
 # pen.dev CLI operation
 
 Drive pen.dev's editor engine directly from the shell. `pen interactive` exposes the
 same tools the desktop app's agent uses — and the agent makes the design decisions.
+
+> Skill version 0.1.0. Tested against pen CLI v0.3.5 (Node 22+). See
+> [CHANGELOG.md](CHANGELOG.md) for what changed.
 
 ## Two modes
 

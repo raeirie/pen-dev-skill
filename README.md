@@ -14,6 +14,9 @@ sandbox escapes, screenshot extraction).
 pen interactive -a desktop   # ← this skill: the agent drives pen's tools
 ```
 
+Latest release: **[v0.1.0](CHANGELOG.md#010--2026-10-22)** ·
+[CHANGELOG](CHANGELOG.md) · [Releases](https://github.com/raeirie/pen-dev-skill/releases)
+
 ---
 
 ## Why this exists
@@ -278,6 +281,7 @@ and how to verify it.
 ## Documentation
 
 - [SKILL.md](SKILL.md) — the skill itself
+- [CHANGELOG.md](CHANGELOG.md) — what changed in each version
 - [docs/pen-cli.md](docs/pen-cli.md) — CLI reference: commands, flags, auth, env vars
 - [docs/execute-api.md](docs/execute-api.md) — the `execute` tool's full API surface
 - [docs/visual-verification.md](docs/visual-verification.md) — screenshots, clipping
