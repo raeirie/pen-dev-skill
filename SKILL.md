@@ -1,7 +1,7 @@
 ---
 name: pen-dev
 description: Design in pen.dev from the terminal: create or edit .pen files, change the canvas open in Pen.app, and export to PNG or HTML. Use when the user asks for a pen.dev design — a screen, page, mockup, dashboard or component — or asks to change whatever layer they have selected in Pen.app.
-version: 0.1.1
+version: 0.2.0
 ---
 
 # pen.dev CLI operation

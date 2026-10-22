@@ -16,7 +16,7 @@ Agent:  [audits your file for an existing design system]
         Done — here's the screenshot. Want the middle tier emphasized?
 ```
 
-Latest release: **[v0.1.1](CHANGELOG.md#011--2026-10-22)** ·
+Latest release: **[v0.2.0](CHANGELOG.md#020--2026-10-22)** ·
 [CHANGELOG](CHANGELOG.md) · [Releases](https://github.com/raeirie/pen-dev-skill/releases)
 
 ---

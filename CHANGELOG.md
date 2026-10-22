@@ -13,6 +13,12 @@ even when no code moved.
 
 ## [Unreleased]
 
+Nothing yet.
+
+---
+
+## [0.2.0] — 2026-10-22
+
 ### Changed
 
 - README restructured around who is reading it. The old Usage section documented
@@ -196,6 +202,7 @@ driving a real pen.dev project end to end.
 The frontmatter is treated as public interface: it is the only thing the
 router reads, and changing it can silently stop the skill from being selected.
 
-[Unreleased]: https://github.com/raeirie/pen-dev-skill/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/raeirie/pen-dev-skill/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/raeirie/pen-dev-skill/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/raeirie/pen-dev-skill/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/raeirie/pen-dev-skill/releases/tag/v0.1.0
