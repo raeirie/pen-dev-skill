@@ -1,13 +1,12 @@
 ---
 name: pen-dev
-description: Operate the pen.dev design tool from the terminal via its headless CLI. Use when the user wants to create, edit, review or export pen.dev designs (.pen files), operate the Pen.app canvas, or build UI mockups in pen.dev. Bypasses pen's own paid LLM agent by driving the MCP tool surface directly, so design work costs nothing extra beyond this agent.
+description: Operate the pen.dev design tool from the terminal via its headless CLI. Use when the user wants to create, edit, review or export pen.dev designs (.pen files), operate the Pen.app canvas, or build UI mockups in pen.dev. Drives pen's design tools directly, reusing the file's own design system when it has one.
 ---
 
 # pen.dev CLI operation
 
 Drive pen.dev's editor engine directly from the shell. `pen interactive` exposes the
-same MCP tools the desktop app's agent uses — but *you* make the design decisions,
-so pen's bundled LLM never runs and never bills.
+same tools the desktop app's agent uses — and the agent makes the design decisions.
 
 ## Two modes
 
@@ -16,7 +15,9 @@ so pen's bundled LLM never runs and never bills.
 | **Live app** | `pen interactive -a desktop` | Edit the canvas open in Pen.app. Changes appear instantly. Requires Pen.app running. |
 | **Headless** | `pen interactive -o out.pen [--in in.pen]` | Create/edit `.pen` files with no GUI. Best for CI and for design work you verify via screenshots. |
 
-Never use `pen --prompt "..."` (agent mode) — that runs pen's own paid model.
+Use `pen interactive` — it exposes pen's tools directly, and the agent makes every
+design decision itself. (Agent mode, `pen --prompt "..."`, delegates the design to
+pen's own model instead.)
 
 ## Sandbox constraints (important)
 
@@ -136,6 +137,9 @@ globals like `page = Insert(...)` persist across chunks.
 
 ## Workflow
 
+The order matters. **The audit comes before any design work** — you cannot
+inherit a design system you haven't looked at yet.
+
 1. **Read the guides.** `read_skill()` gives the core rules; `read_skill({path:"execute.md"})`
    gives the full API; `read_skill({path:"pen-schema.md"})` gives the TypeScript schema.
    Topic guides live under `guide/` — e.g. `guide/landing-page.md`, `guide/web-app.md`,
@@ -155,24 +159,24 @@ globals like `page = Insert(...)` persist across chunks.
    `"$token"`. Use themed values for light/dark. When the file already has
    tokens, add only what is missing — never redefine what exists.
 
-4b. **Set `layout` explicitly on every container.** Frames default to
+5. **Set `layout` explicitly on every container.** Frames default to
    `layout:"horizontal"`, so a wrapper you meant to stack silently arranges
    its children in a row. This is the most common silent layout error, and it
    survives a board-scale screenshot. State `layout:"vertical"` when you mean
    vertical.
 
-5. **Build incrementally.** Insert a section, `TakeScreenshot([sectionId])`, look at
+6. **Build incrementally.** Insert a section, `TakeScreenshot([sectionId])`, look at
    the image, fix what looks wrong, move on. Verify each section as you go — do not
    build the whole page then debug.
 
-6. **Check for problems.** pen reports collapsed/zero-size nodes automatically.
+7. **Check for problems.** pen reports collapsed/zero-size nodes automatically.
    Also run a clipping check:
 
    ```js
    Get(root, (n,c)=>{ if(c.problems) Print("PROBLEM", n.name, c.problems) })
    ```
 
-7. **Clear `placeholder` and save.** Every root frame you touched must end with
+8. **Clear `placeholder` and save.** Every root frame you touched must end with
    `placeholder:false`, or it shows a permanent "generating" state in the app.
    Then `save()` writes the `.pen` file (headless mode needs it).
 
@@ -186,7 +190,7 @@ globals like `page = Insert(...)` persist across chunks.
    Get((n,c)=>{c.skipChildren(); if(n.placeholder) Print("STILL GENERATING:", n.name)})
    ```
 
-7. **Export** deliverables: `Export([id], "png", "./exports")`, or
+9. **Export** deliverables: `Export([id], "png", "./exports")`, or
    `Export([id], "html-tailwind", "./out.html")` / `"html-css"`.
 
 ## Finishing checklist

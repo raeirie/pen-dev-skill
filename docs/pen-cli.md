@@ -41,15 +41,15 @@ pen > exit()
 **One tool call per line.** Multi-line JavaScript must be sent as a single
 `execute({ input: "..." })` call with the JS JSON-escaped.
 
-### Agent mode — the expensive one
+### Agent mode — pen's own design agent
 
 ```bash
 pen --out design.pen --prompt "Create a login page" --agent claude
 ```
 
-Runs pen's own bundled model (Claude, Codex, Gemini, or a Pi provider). **This
-skill never uses it** — the agent drives the tools itself instead, so no
-third-party model is billed.
+Delegates the design work to pen's bundled model (Claude, Codex, Gemini, or a Pi
+provider). **This skill uses interactive mode instead**, where the agent drives
+pen's tools itself.
 
 ---
 

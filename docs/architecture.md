@@ -31,8 +31,8 @@ How the pieces fit together, and why they're arranged this way.
 ```
 
 The critical property: **the agent is the design brain.** The engine renders;
-the agent decides. pen's own bundled LLM is never invoked, so the only model
-that runs is the one you already pay for.
+the agent decides. Every design decision — the layout, the palette, the copy,
+the trade-offs — is made by the agent working directly against pen's tools.
 
 ---
 

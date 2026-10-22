@@ -1,20 +1,17 @@
 # pen-dev skill
 
-Operate [pen.dev](https://pen.dev) from an AI agent — **without paying for pen's own LLM agent**.
+Operate [pen.dev](https://pen.dev) from an AI agent.
 
-The pen.dev CLI (`@pen.dev/cli`) exposes the same MCP tool surface the desktop app's
+The pen.dev CLI (`@pen.dev/cli`) exposes the same tool surface the desktop app's
 agent uses, via `pen interactive`. An agent can drive that surface directly: the
-design engine does the rendering, the agent makes the design decisions. No third-party
-model runs in the middle, so the work costs nothing beyond the agent you're already
-using.
+design engine does the rendering, the agent makes the design decisions.
 
 This repo packages that workflow as a **DeepSeek Harness skill**, plus a driver
-script that handles the parts agents trip over (authentication, socket paths, sandbox
-escapes, screenshot extraction).
+script that handles the parts agents trip over (authentication, socket paths,
+sandbox escapes, screenshot extraction).
 
 ```
-pen interactive          # pen's own agent — runs a paid model
-pen interactive -a desktop   # ← this skill: tools only, you drive it
+pen interactive -a desktop   # ← this skill: the agent drives pen's tools
 ```
 
 ---
@@ -23,10 +20,10 @@ pen interactive -a desktop   # ← this skill: tools only, you drive it
 
 pen.dev's CLI has two ways to use it:
 
-| Mode | Command | What runs | Cost |
-| --- | --- | --- | --- |
-| Agent mode | `pen --prompt "..."` | pen's bundled Claude/GPT | Billable per token |
-| Interactive mode | `pen interactive` | *your* agent drives the tools | Only your agent |
+| Mode | Command | Who drives it |
+| --- | --- | --- |
+| Agent mode | `pen --prompt "..."` | pen's own bundled model |
+| Interactive mode | `pen interactive` | *your* agent, using pen's tools |
 
 The CLI's own help says it plainly:
 
