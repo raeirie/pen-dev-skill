@@ -14,7 +14,7 @@ sandbox escapes, screenshot extraction).
 pen interactive -a desktop   # ← this skill: the agent drives pen's tools
 ```
 
-Latest release: **[v0.1.0](CHANGELOG.md#010--2026-10-22)** ·
+Latest release: **[v0.1.1](CHANGELOG.md#011--2026-10-22)** ·
 [CHANGELOG](CHANGELOG.md) · [Releases](https://github.com/raeirie/pen-dev-skill/releases)
 
 ---

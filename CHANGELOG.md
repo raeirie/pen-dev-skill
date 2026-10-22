@@ -13,12 +13,18 @@ even when no code moved.
 
 ## [Unreleased]
 
+Nothing yet.
+
+---
+
+## [0.1.1] — 2026-10-22
+
 ### Fixed
 
 - `install.sh` now supports pinning a version or branch via a `#ref` suffix on
-  `REPO_URL` (e.g. `REPO_URL=…#v0.1.0`). The previous documentation implied
-  pinning worked; it did not — the ref was passed straight to `git clone` as
-  part of the URL and failed.
+  `REPO_URL` (e.g. `REPO_URL=…#v0.1.0`). v0.1.0 documented pinning but did not
+  implement it — the ref was passed straight to `git clone` as part of the URL
+  and failed.
 
 ---
 
@@ -108,5 +114,6 @@ driving a real pen.dev project end to end.
 The frontmatter is treated as public interface: it is the only thing the
 router reads, and changing it can silently stop the skill from being selected.
 
-[Unreleased]: https://github.com/raeirie/pen-dev-skill/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/raeirie/pen-dev-skill/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/raeirie/pen-dev-skill/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/raeirie/pen-dev-skill/releases/tag/v0.1.0

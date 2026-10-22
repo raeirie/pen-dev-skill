@@ -1,7 +1,7 @@
 ---
 name: pen-dev
 description: Operate the pen.dev design tool from the terminal via its headless CLI. Use when the user wants to create, edit, review or export pen.dev designs (.pen files), operate the Pen.app canvas, or build UI mockups in pen.dev. Drives pen's design tools directly, reusing the file's own design system when it has one.
-version: 0.1.0
+version: 0.1.1
 ---
 
 # pen.dev CLI operation
