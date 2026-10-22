@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+
+# Skill output
+*.pen
+pen-shots/
+exports/
+
+# Scratch
+/tmp/
+*.log
