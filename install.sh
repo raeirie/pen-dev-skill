@@ -6,6 +6,11 @@
 # The repository root IS the skill: SKILL.md sits at the top level, alongside the
 # scripts it references. So installing means putting the repo where the harness
 # looks for skills.
+#
+# Environment:
+#   SKILL_ROOT  where skills live (default: ~/.dsh/skills)
+#   REPO_URL    source repo. Append "#<ref>" to pin a version or branch:
+#                 REPO_URL=https://github.com/raeirie/pen-dev-skill.git#v0.1.0
 set -euo pipefail
 
 REPO_URL="${REPO_URL:-https://github.com/raeirie/pen-dev-skill.git}"
@@ -24,13 +29,28 @@ TARGET="$TARGET_ROOT/$SKILL_NAME"
 info "Installing $SKILL_NAME into $TARGET_ROOT"
 
 # --- Source --------------------------------------------------------------
+# REPO_URL may carry a ref:  <url>#<tag-or-branch>  e.g.
+#   REPO_URL=https://github.com/raeirie/pen-dev-skill.git#v0.1.0
+# The ref is cloned separately so the installed copy is that exact revision.
+REPO_REF=""
+REPO_BASE="$REPO_URL"
+if [[ "$REPO_URL" == *"#"* ]]; then
+  REPO_BASE="${REPO_URL%%#*}"
+  REPO_REF="${REPO_URL##*#}"
+fi
+
 if [[ -f "SKILL.md" && -f "pen.sh" ]]; then
   SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
   info "Installing from local copy at $SRC"
 else
   SRC="$(mktemp -d)"
-  info "Cloning $REPO_URL"
-  git clone --depth 1 "$REPO_URL" "$SRC/$SKILL_NAME"
+  if [[ -n "$REPO_REF" ]]; then
+    info "Cloning $REPO_BASE @ $REPO_REF"
+    git clone --depth 1 --branch "$REPO_REF" "$REPO_BASE" "$SRC/$SKILL_NAME"
+  else
+    info "Cloning $REPO_BASE"
+    git clone --depth 1 "$REPO_BASE" "$SRC/$SKILL_NAME"
+  fi
   SRC="$SRC/$SKILL_NAME"
 fi
 

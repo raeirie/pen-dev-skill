@@ -13,7 +13,12 @@ even when no code moved.
 
 ## [Unreleased]
 
-Nothing yet.
+### Fixed
+
+- `install.sh` now supports pinning a version or branch via a `#ref` suffix on
+  `REPO_URL` (e.g. `REPO_URL=…#v0.1.0`). The previous documentation implied
+  pinning worked; it did not — the ref was passed straight to `git clone` as
+  part of the URL and failed.
 
 ---
 

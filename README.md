@@ -264,10 +264,16 @@ is valid YAML with a kebab-case name and a routable description, internal doc
 links resolve, the shell and Python helpers parse, the examples are valid
 JavaScript, and the installer actually installs.
 
-**Releases:** tag a version (`git tag v1.0.0 && git push --tags`) and the
-installer's pinned clone can use it. The raw `install.sh` URL points at `main`,
-so it always gets the latest — pin with `REPO_URL=...@v1.0.0` if you need
-reproducibility.
+**Releases:** each version is a GitHub release with a tag. The one-line install
+points at `main`, so it always gets the latest. Pin to a specific version with a
+`#ref` suffix:
+
+```bash
+REPO_URL="https://github.com/raeirie/pen-dev-skill.git#v0.1.0" ./install.sh
+```
+
+The installed `SKILL.md` then carries that version's `version:` field, so an
+agent can tell which revision it is running.
 
 **What belongs in the skill vs. the docs:** the skill is what an agent needs on
 *every* run. Depth goes in `docs/` and gets linked. If a detail is only needed
