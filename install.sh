@@ -10,7 +10,7 @@
 # Environment:
 #   SKILL_ROOT  where skills live (default: ~/.dsh/skills)
 #   REPO_URL    source repo. Append "#<ref>" to pin a version or branch:
-#                 REPO_URL=https://github.com/raeirie/pen-dev-skill.git#v0.1.0
+#                 REPO_URL=https://github.com/raeirie/pen-dev-skill.git#v0.1.1
 set -euo pipefail
 
 REPO_URL="${REPO_URL:-https://github.com/raeirie/pen-dev-skill.git}"
@@ -30,7 +30,7 @@ info "Installing $SKILL_NAME into $TARGET_ROOT"
 
 # --- Source --------------------------------------------------------------
 # REPO_URL may carry a ref:  <url>#<tag-or-branch>  e.g.
-#   REPO_URL=https://github.com/raeirie/pen-dev-skill.git#v0.1.0
+#   REPO_URL=https://github.com/raeirie/pen-dev-skill.git#v0.1.1
 # The ref is cloned separately so the installed copy is that exact revision.
 REPO_REF=""
 REPO_BASE="$REPO_URL"

@@ -184,7 +184,7 @@ SKILL_ROOT=./.dsh/skills     ./install.sh     # project-scoped, for DSH
 Pin a version with a `#ref` suffix:
 
 ```bash
-REPO_URL="https://github.com/raeirie/pen-dev-skill.git#v0.1.0" ./install.sh
+REPO_URL="https://github.com/raeirie/pen-dev-skill.git#v0.1.1" ./install.sh
 ```
 
 ---
