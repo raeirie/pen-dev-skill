@@ -1,7 +1,7 @@
 ---
 name: pen-dev
-description: Design in pen.dev from the terminal: create or edit .pen files, change the canvas open in Pen.app, and export to PNG or HTML. Use when the user asks for a pen.dev design — a screen, page, mockup, dashboard or component — or asks to change whatever layer they have selected in Pen.app.
-version: 0.2.0
+description: Design in pen.dev from the terminal: create or edit .pen files, change the canvas open in Pen.app, and export to PNG or HTML. Use when the user asks for a pen.dev design — a screen, page, mockup, dashboard or component — asks to change whatever layer they have selected in Pen.app, or asks to extract a design system from a page or build one.
+version: 0.3.0
 ---
 
 # pen.dev CLI operation
@@ -294,6 +294,9 @@ needs a light section gets it through the theme axis, not a hardcoded background
 
 A variant explores *emphasis* within the same system; the tokens stay shared.
 
+The inverse job — building a system from a finished page that has none — is
+[design-system extraction](docs/design-system-extraction.md).
+
 ## Reference
 
 Read on demand — this is the depth that would bury the steps above.
@@ -304,7 +307,8 @@ Read on demand — this is the depth that would bury the steps above.
 | [docs/visual-verification.md](docs/visual-verification.md) | a screenshot looks wrong, clipping fires, or CTAs sit at different heights |
 | [docs/pen-cli.md](docs/pen-cli.md) | CLI flags, auth flow, token storage, sandbox errors (written against pen CLI v0.3.5; check `pen version`) |
 | [docs/variants.md](docs/variants.md) | the user asks for variants, alternatives, or "a few takes" on a design |
-| [examples/](examples/) | you want a runnable script: audit, landing page, components, variants board, selection edit |
+| [docs/design-system-extraction.md](docs/design-system-extraction.md) | the user asks to extract tokens, components or sections from a page, or to build a design-system board |
+| [examples/](examples/) | you want a runnable script: audit, landing page, components, variants board, selection edit, design-system extraction |
 
 ## Style guidance
 

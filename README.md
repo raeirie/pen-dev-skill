@@ -70,6 +70,7 @@ you asked for. It doesn't need a second model in the middle.
 - Edits to an existing `.pen` file, or to the canvas open in Pen.app
 - Variants — *"give me three takes on this hero"*
 - Component and design-system work — buttons, cards, nav, tokens
+- A design system extracted from a finished page — *"extract the design system from this page"*
 - Exports — PNG, or HTML with Tailwind or plain CSS
 
 ---
@@ -396,7 +397,8 @@ Full API: [docs/execute-api.md](docs/execute-api.md). CLI reference:
 [docs/pen-cli.md](docs/pen-cli.md). How the layers fit:
 [docs/architecture.md](docs/architecture.md). The verification checks:
 [docs/visual-verification.md](docs/visual-verification.md). Building variants:
-[docs/variants.md](docs/variants.md).
+[docs/variants.md](docs/variants.md). Extracting a design system from a finished
+page: [docs/design-system-extraction.md](docs/design-system-extraction.md).
 
 ### Screenshots
 
@@ -451,6 +453,7 @@ tell which version it's running.
 - [docs/execute-api.md](docs/execute-api.md) — the full `execute` API
 - [docs/visual-verification.md](docs/visual-verification.md) — the checks a screenshot catches
 - [docs/variants.md](docs/variants.md) — variants boards and unequal-height cards
+- [docs/design-system-extraction.md](docs/design-system-extraction.md) — building a design system from a finished page
 - [docs/architecture.md](docs/architecture.md) — how the pieces fit
 - [examples/](examples/) — runnable scripts
 - [CONTRIBUTING.md](CONTRIBUTING.md) — where a new rule belongs

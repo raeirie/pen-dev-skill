@@ -17,6 +17,42 @@ Nothing yet.
 
 ---
 
+## [0.3.0] — 2026-10-25
+
+### Changed
+
+- The description names extraction as a third branch: *"or asks to extract a
+  design system from a page or build one."* The description is the only thing the
+  router reads, and extraction requests were riding on the design branch by
+  implication rather than by naming — the same request routed differently
+  depending on how it was phrased.
+
+### Added
+
+- `docs/design-system-extraction.md` — building a design system from a finished
+  page: where the board goes, the audit, contrast measured from extracted values,
+  normalisation into the file's own token layers, building the board as one
+  chunk, and the findings report. Disclosed behind a Reference row, since only
+  extraction requests reach it.
+  - Its central rule is the one this work got wrong first: **build the board
+    into the file you extracted from.** A product file carries a design-system
+    frame alongside its pages. A system in a separate file is a duplicate, and
+    tokens are per-file, so it reaches other pages only through
+    `import_library`.
+  - The pitfalls record what a live session gets wrong: `pen.sh app` edits
+    whatever canvas is frontmost rather than the file you named; live edits reach
+    disk only on `save()`; live-mode `ctx.problems` clipping is a false positive
+    that a headless build of the same content does not reproduce; `Export` takes
+    node ids rather than names; and a `.pen` file is not merged by editing its
+    JSON.
+- `examples/06-extract-design-system.js` — the extraction probe: tokens, themes,
+  components, sections, a node census, and every literal hex used where a token
+  belongs.
+- `SKILL.md`'s design-system section points at the extraction doc, so the reuse
+  path and the build path are one link apart.
+
+---
+
 ## [0.2.0] — 2026-10-22
 
 ### Changed
@@ -202,7 +238,8 @@ driving a real pen.dev project end to end.
 The frontmatter is treated as public interface: it is the only thing the
 router reads, and changing it can silently stop the skill from being selected.
 
-[Unreleased]: https://github.com/raeirie/pen-dev-skill/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/raeirie/pen-dev-skill/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/raeirie/pen-dev-skill/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/raeirie/pen-dev-skill/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/raeirie/pen-dev-skill/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/raeirie/pen-dev-skill/releases/tag/v0.1.0
